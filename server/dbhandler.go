@@ -11,6 +11,7 @@ import (
   "encoding/json"
   "os"
   "github.com/gin-gonic/gin"
+  "errors"
 )
 
 type Secret struct{
@@ -46,15 +47,13 @@ func handleDB(){
   }
 }
 
-func userAuthDB(c *gin.Context){
-  var responseData ResponseData
-  if err := c.BindJSON(&responseData); err != nil{
-    fmt.Println(err)
-    return
+func userAuthDB(c *gin.Context) ([]Chatroom, error){
+  username := c.PostForm("username")
+  if username := c.PostForm("username"); username == "" {
+    return nil, errors.New("invalid username")
   }
-  fmt.Println(responseData)
   conn := connDB.Database("chat-app").Collection("chatters")
-  filter := bson.M{"username": responseData.Username}
+  filter := bson.M{"username": username}
   fmt.Println(filter)
   var res Chatter
   err := conn.FindOne(context.TODO(), filter).Decode(&res)
@@ -62,7 +61,7 @@ func userAuthDB(c *gin.Context){
   if err != nil{
     if err == mongo.ErrNoDocuments {
       c.JSON(http.StatusNotFound, gin.H{"message": "user not found"})
-      return
+      return nil, errors.New("User not found")
     }
     panic(err)
   }
@@ -72,17 +71,17 @@ func userAuthDB(c *gin.Context){
   cursor, err := collection.Find(context.TODO(), chatroomFilter)
   if err != nil {
     fmt.Println(err)
-    panic(err)
+    return nil, errors.New("Error retrieving chatrooms")
   }
   defer cursor.Close(context.TODO())
 
   var results []Chatroom
   if err = cursor.All(context.TODO(), &results); err != nil {
-    panic(err)
+    return nil, errors.New("Error processing chatrooms")
   }
 
   fmt.Println(results)
-  c.JSON(http.StatusOK, results)
+  return results, nil
 }
 
 func getURI() string{

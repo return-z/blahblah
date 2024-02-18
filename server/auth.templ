@@ -1,0 +1,20 @@
+package main
+
+templ Auth(){
+  <html>
+  <head>
+      <link href="https://unpkg.com/water.css@2.1.1/out/water.css" rel="stylesheet" />
+      <script src="https://unpkg.com/htmx.org@<2/dist/htmx.js" defer></script>
+  </head>
+  <body>
+    <h1>Welcome to the chat app</h1>
+    <form hx-post="/auth" hx-target="this" hx-swap="outerHTML">
+      <div>
+        <label>Enter your name</label>
+        <input type="username" name="username" />
+      </div>
+      <button class="btn">Submit</button>
+    </form>
+  </body>
+  </html>
+}

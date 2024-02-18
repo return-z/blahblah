@@ -1,0 +1,12 @@
+package main
+
+templ Chat(){
+  <div hx-ws="connect:/ws/test_chatroom_1">
+    <div id="chat">
+    </div>
+    <form hx-ws="send:submit">
+      <input type="submit" value="Send" />
+      <input type="text" id="msg" size="64" autofocus />
+    </form>
+  </div>
+}

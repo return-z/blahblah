@@ -1,0 +1,9 @@
+package main
+
+templ Chatrooms(chatrooms []Chatroom){
+  <div class="chatrooms" hx-target="this" hx-swap="outerHTML">
+    for _, chatroom := range chatrooms{
+      <button hx-get="/chat">{chatroom.Name}</button>
+    }
+  </div>
+}

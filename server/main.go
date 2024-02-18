@@ -4,6 +4,7 @@ import (
   "fmt"
   "flag"
   "github.com/gin-gonic/gin"
+  "github.com/a-h/templ/examples/integration-gin/gintemplrenderer"
   "net/http"
 )
 
@@ -27,10 +28,6 @@ func CORSMiddleware() gin.HandlerFunc {
   }
 }
 
-func isValidChatroom(hubs map[string]bool, chatroom string) bool{
-  return hubs[chatroom]
-}
-
 func _createHubs(){
   hubs = make(map[string]*Hub)
   for i:=1; i<=4; i++{
@@ -45,6 +42,14 @@ func main(){
   go dbInit()
   router := gin.Default()
   router.Use(CORSMiddleware())
+  router.GET("/", func(c *gin.Context){
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Auth())
+    c.Render(http.StatusOK, r)
+  })
+  router.GET("/chat", func(c *gin.Context){
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Chat())
+    c.Render(http.StatusOK, r)
+  })
   router.GET("/ws/:chatroom", func(c *gin.Context){
     chatroom := c.Param("chatroom")
     if hub, ok := hubs[chatroom]; ok {
@@ -55,7 +60,13 @@ func main(){
     }
   })
   router.POST("/auth", func(c *gin.Context){
-      userAuthDB(c)
+    results, err := userAuthDB(c)
+    if err != nil {
+      c.JSON(http.StatusBadRequest, gin.H{"message": err})
+      return
+    }
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Chatrooms(results))
+    c.Render(http.StatusOK, r)
   })
   router.Run("localhost:5990")
 }
