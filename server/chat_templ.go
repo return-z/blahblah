@@ -23,7 +23,7 @@ func Chat() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-ws=\"connect:/ws/test_chatroom_1\"><div id=\"chat\"></div><form hx-ws=\"send:submit\"><input type=\"submit\" value=\"Send\"> <input type=\"text\" id=\"msg\" size=\"64\" autofocus></form></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-ws=\"connect:/ws/test_chatroom_1\"><div id=\"chat\"></div><form hx-ws=\"send:submit\"><input type=\"msg\" name=\"msg\"> <button type=\"submit\">Send</button></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

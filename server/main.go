@@ -42,6 +42,7 @@ func main(){
   go dbInit()
   router := gin.Default()
   router.Use(CORSMiddleware())
+  router.Static("/css","./")
   router.GET("/", func(c *gin.Context){
     r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Auth())
     c.Render(http.StatusOK, r)

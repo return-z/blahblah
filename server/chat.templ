@@ -5,8 +5,8 @@ templ Chat(){
     <div id="chat">
     </div>
     <form hx-ws="send:submit">
-      <input type="submit" value="Send" />
-      <input type="text" id="msg" size="64" autofocus />
+      <input type="msg" name="msg"/>
+      <button type="submit">Send</button>
     </form>
   </div>
 }

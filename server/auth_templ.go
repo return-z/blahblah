@@ -23,7 +23,7 @@ func Auth() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<html><head><link href=\"https://unpkg.com/water.css@2.1.1/out/water.css\" rel=\"stylesheet\"><script src=\"https://unpkg.com/htmx.org@&lt;2/dist/htmx.js\" defer></script></head><body><h1>Welcome to the chat app</h1><form hx-post=\"/auth\" hx-target=\"this\" hx-swap=\"outerHTML\"><div><label>Enter your name</label> <input type=\"username\" name=\"username\"></div><button class=\"btn\">Submit</button></form></body></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<html><head><script src=\"https://unpkg.com/htmx.org@&lt;2/dist/htmx.js\" defer></script><link href=\"/css/output.css\" rel=\"stylesheet\"></head><body><div><div className=\"fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center\"><div className=\"bg-white p-5 rounded-md flex flex-col items-center space-y-4\"><h2 className=\"text-lg font-semibold\">Enter Your Name</h2><form className=\"flex flex-col items-center space-y-2\"><input type=\"text\" className=\"border p-2 rounded\" placeholder=\"Your name\" required> <button type=\"submit\" className=\"bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700\">Enter Chat</button></form></div></div></div></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

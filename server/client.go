@@ -1,17 +1,23 @@
 package main
 
 import (
+  "fmt"
   "net/http"
   "bytes"
   "time"
   "github.com/gin-gonic/gin"
   "github.com/gorilla/websocket"
+  "encoding/json"
 )
 
 type ImClient struct {
   hub *Hub
   conn *websocket.Conn
   send chan []byte
+}
+
+type ReceivedMessage struct {
+  Msg string `json:"msg"`
 }
 
 const (
@@ -36,6 +42,11 @@ var upgrader = websocket.Upgrader{
   },
 }
 
+func htmxized(b []byte) []byte{
+  htmxMessage := [][]byte{[]byte(`<div id="chat" hx-swap-oob="beforeend">`), b, []byte("</div>")}
+  return bytes.Join(htmxMessage, []byte(""))
+}
+
 var (
   newline = []byte{'\n'}
   space = []byte{' '}
@@ -55,7 +66,13 @@ func (c *ImClient) socketReadPump(){
       return
     }
     message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-    c.hub.broadcast <- message
+    var msg ReceivedMessage 
+    err = json.Unmarshal(message, &msg)
+    if err != nil {
+      fmt.Println(err)
+      panic(err)
+    }
+    c.hub.broadcast <- []byte(msg.Msg)
   }
 }
 
@@ -77,11 +94,12 @@ func (c *ImClient) socketWritePump(){
       if err != nil{
         return
       }
-      w.Write(message)
+      w.Write(htmxized(message))
       n := len(c.send)
       for i:=0; i<n; i++{
         w.Write(newline)
-        w.Write(<- c.send)
+        message := <-c.send
+        w.Write(htmxized(message))
       }
 
       if err := w.Close(); err != nil{
