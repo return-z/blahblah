@@ -7,10 +7,8 @@ import (
   "go.mongodb.org/mongo-driver/bson"
   "context"
   "time"
-  "net/http"
   "encoding/json"
   "os"
-  "github.com/gin-gonic/gin"
   "errors"
 )
 
@@ -47,41 +45,22 @@ func handleDB(){
   }
 }
 
-func userAuthDB(c *gin.Context) ([]Chatroom, error){
-  username := c.PostForm("username")
-  if username := c.PostForm("username"); username == "" {
-    return nil, errors.New("invalid username")
+func userAuthDB(name string) (error){
+  if name == "" {
+    return errors.New("invalid username")
   }
-  conn := connDB.Database("chat-app").Collection("chatters")
-  filter := bson.M{"username": username}
+  coll := connDB.Database("chat-app").Collection("chatters")
+  filter := bson.M{"username": name}
   fmt.Println(filter)
   var res Chatter
-  err := conn.FindOne(context.TODO(), filter).Decode(&res)
+  err := coll.FindOne(context.TODO(), filter).Decode(&res)
   fmt.Println(res)
   if err != nil{
     if err == mongo.ErrNoDocuments {
-      c.JSON(http.StatusNotFound, gin.H{"message": "user not found"})
-      return nil, errors.New("User not found")
+      return errors.New("User not found")
     }
-    panic(err)
   }
-  fmt.Println(res.Chatrooms)
-  collection := connDB.Database("chat-app").Collection("chatrooms")
-  chatroomFilter := bson.M{"name" : bson.M{"$in": res.Chatrooms}}
-  cursor, err := collection.Find(context.TODO(), chatroomFilter)
-  if err != nil {
-    fmt.Println(err)
-    return nil, errors.New("Error retrieving chatrooms")
-  }
-  defer cursor.Close(context.TODO())
-
-  var results []Chatroom
-  if err = cursor.All(context.TODO(), &results); err != nil {
-    return nil, errors.New("Error processing chatrooms")
-  }
-
-  fmt.Println(results)
-  return results, nil
+  return nil
 }
 
 func getURI() string{

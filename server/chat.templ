@@ -1,12 +1,31 @@
 package main
 
 templ Chat(){
-  <div hx-ws="connect:/ws/test_chatroom_1">
-    <div id="chat">
+  <div id="auth" hx-swap-oob="true" class="app max-w-screen-lg mx-auto text-white">
+
+   <script>
+     document.body.addEventListener('htmx:oobAfterSwap', function(evt) {
+        const form = document.querySelector("#form");
+        form.reset();
+    });
+  </script>
+    <header class="bg-gray-900 px-6 py-4">
+      <h1 class="text-red-500 text-2xl font-bold text-center">CHAT APPLICATION</h1>
+    </header>
+    <div id="messages" class="message-container bg-black px-6 py-4">
+      <p class="text-blue-400 font-mono p-1">Type <code>!join chatroom_name</code> to join a chatroom</p>
     </div>
-    <form hx-ws="send:submit">
-      <input type="msg" name="msg"/>
-      <button type="submit">Send</button>
-    </form>
+    <footer class="bg-gray-900 px-6 py-4">
+      <div id="ws-form" hx-ws="connect:/ws">
+        <form id="form" hx-ws="send:submit" class="flex">
+          <input name="message" class="w-full rounded-l-md bg-gray-800 border-2 border-gray-700 focus:border-blue-500 focus:outline-none py-2 px-4" placeholder="Type your message..." />
+          <button type="submit" class="bg-green-600 px-4 rounded-r-md hover:bg-green-500 focus:outline-none">
+            <svg class="text-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </button>
+        </form>
+      </div>
+    </footer>
   </div>
 }

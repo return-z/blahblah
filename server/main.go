@@ -33,41 +33,39 @@ func _createHubs(){
   for i:=1; i<=4; i++{
     chatroomName := fmt.Sprintf("test_chatroom_%d", i)
     hub := newHub()
+    go hub.run()
     hubs[chatroomName] = hub
   }
 }
 
 func main(){
+  dbInit()
   _createHubs()
-  go dbInit()
   router := gin.Default()
   router.Use(CORSMiddleware())
-  router.Static("/css","./")
+  router.Static("/assets", "./")
   router.GET("/", func(c *gin.Context){
-    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Auth())
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Home())
     c.Render(http.StatusOK, r)
   })
   router.GET("/chat", func(c *gin.Context){
-    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Chat())
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Auth())
     c.Render(http.StatusOK, r)
   })
-  router.GET("/ws/:chatroom", func(c *gin.Context){
-    chatroom := c.Param("chatroom")
-    if hub, ok := hubs[chatroom]; ok {
-      go hub.run()
-      serveWS(hub, c)
-    } else{
-      c.JSON(http.StatusNotFound, gin.H{"message":"Chatroom not found!"})
-    }
+  router.GET("/ws", func(c *gin.Context){
+    serveWS(c)
   })
   router.POST("/auth", func(c *gin.Context){
-    results, err := userAuthDB(c)
-    if err != nil {
-      c.JSON(http.StatusBadRequest, gin.H{"message": err})
-      return
+    name := c.PostForm("username")
+    err := userAuthDB(name)
+    if err != nil{
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, NoUser())
+      c.Render(http.StatusOK, r)
+    } else {
+      username = name
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Chat())
+      c.Render(http.StatusOK, r)
     }
-    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Chatrooms(results))
-    c.Render(http.StatusOK, r)
   })
   router.Run("localhost:5990")
 }

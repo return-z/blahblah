@@ -29,6 +29,7 @@ func (hub *Hub) runHub(){
     select {
     case client := <- hub.register:
         hub.clients[client] = true
+        client.send <- []byte("Joined the hub!")
     case client := <- hub.deregister:
         if _,ok := hub.clients[client]; ok {
             close(client.send)
