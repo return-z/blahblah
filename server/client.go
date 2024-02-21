@@ -55,23 +55,34 @@ var (
   space = []byte{' '}
 )
 
-func isJoinCommand(message string) (bool, *Hub) {
+func (c *ImClient)parseCommand(message string){
+  if !strings.HasPrefix(message, "!"){
+    return
+  }
   args := strings.Fields(message)
   fmt.Println(args)
-  if len(args) > 1  {
-    if args[0] == "!join" {
-      roomname := args[1]
-      if hub, ok := hubs[roomname]; ok{
-        return true, hub
+  cmd := args[0]
+  switch {
+    case cmd == "!join":
+      if len(args) > 1 {
+        chatroom := args[1]
+        if hub, ok := hubs[chatroom]; ok {
+          hub.register <- c
+        }
       }
-    }
+    case cmd == "!leave":
+      fmt.Println("Trying to leave")
+      if c.hub != nil {
+        c.hub.deregister <- c
+      }
+    default:
+      return 
   }
-  return false, nil
+  return
 }
 
 func (c *ImClient) setHub(hub *Hub){
   c.hub = hub
-  c.hub.register <- c
 }
 
 func (c *ImClient) socketReadPump(){
@@ -102,9 +113,7 @@ func (c *ImClient) socketReadPump(){
     } else {
       c.send <- []byte(msg.Msg)
     }
-    if yes, hub := isJoinCommand(msg.Msg); yes {
-      c.setHub(hub)
-    }
+    c.parseCommand(msg.Msg)
   }
 }
 

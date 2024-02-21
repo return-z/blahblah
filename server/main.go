@@ -6,6 +6,7 @@ import (
   "github.com/gin-gonic/gin"
   "github.com/a-h/templ/examples/integration-gin/gintemplrenderer"
   "net/http"
+  "errors"
 )
 
 var addr = flag.String("localhost", ":5990", "http service address")
@@ -49,11 +50,15 @@ func main(){
     c.Render(http.StatusOK, r)
   })
   router.GET("/chat", func(c *gin.Context){
-    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, TryAuth())
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Home())
+    c.Render(http.StatusOK, r)
+  })
+  router.GET("/login", func(c *gin.Context){
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, LoginForm(nil))
     c.Render(http.StatusOK, r)
   })
   router.GET("/register", func(c *gin.Context){
-    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, TryRegister())
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, RegisterForm(nil))
     c.Render(http.StatusOK, r)
   })
   router.GET("/ws", func(c *gin.Context){
@@ -62,12 +67,13 @@ func main(){
   router.POST("/register", func(c *gin.Context){
     name := c.PostForm("username")
     err := userAuthDB(name)
+    fmt.Println(err)
     if err != nil{
       registerUser(name)
-      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, RegisterSuccessful())
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK,LoginForm(nil))
       c.Render(http.StatusOK, r)
     } else {
-      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, RegisterUnsuccessful())
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK,  RegisterForm(errors.New("User already exists")))
       c.Render(http.StatusOK, r)
     }
   })
@@ -75,11 +81,11 @@ func main(){
     name := c.PostForm("username")
     err := userAuthDB(name)
     if err != nil{
-      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, AuthUnsuccessful())
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, LoginForm(err))
       c.Render(http.StatusOK, r)
     } else {
       username = name
-      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, AuthSuccessful())
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Chat())
       c.Render(http.StatusOK, r)
     }
   })
