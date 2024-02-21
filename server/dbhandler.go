@@ -45,6 +45,21 @@ func handleDB(){
   }
 }
 
+func registerUser(name string) (error){
+  if name == ""{
+    return errors.New("invalid name")
+  }
+  coll := connDB.Database("chat-app").Collection("chatters")
+  chatrooms := make([]string, 0)
+  newChatter := Chatter{Username: name, CreatedAt: time.Now(), Chatrooms: chatrooms}
+  result, err := coll.InsertOne(context.TODO(), newChatter)
+  if err != nil{
+    return errors.New("DB error")
+  }
+  fmt.Println("Inserted user in the db with id: ", result.InsertedID)
+  return nil
+}
+
 func userAuthDB(name string) (error){
   if name == "" {
     return errors.New("invalid username")

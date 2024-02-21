@@ -49,21 +49,37 @@ func main(){
     c.Render(http.StatusOK, r)
   })
   router.GET("/chat", func(c *gin.Context){
-    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Auth())
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, TryAuth())
+    c.Render(http.StatusOK, r)
+  })
+  router.GET("/register", func(c *gin.Context){
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, TryRegister())
     c.Render(http.StatusOK, r)
   })
   router.GET("/ws", func(c *gin.Context){
     serveWS(c)
   })
+  router.POST("/register", func(c *gin.Context){
+    name := c.PostForm("username")
+    err := userAuthDB(name)
+    if err != nil{
+      registerUser(name)
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, RegisterSuccessful())
+      c.Render(http.StatusOK, r)
+    } else {
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, RegisterUnsuccessful())
+      c.Render(http.StatusOK, r)
+    }
+  })
   router.POST("/auth", func(c *gin.Context){
     name := c.PostForm("username")
     err := userAuthDB(name)
     if err != nil{
-      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, NoUser())
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, AuthUnsuccessful())
       c.Render(http.StatusOK, r)
     } else {
       username = name
-      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Chat())
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, AuthSuccessful())
       c.Render(http.StatusOK, r)
     }
   })

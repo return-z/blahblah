@@ -1,0 +1,20 @@
+package components
+
+templ Login(){
+  <div id="auth" class="h-screen flex justify-center items-center">
+    <div class="w-full flex flex-col justify-center items-center px-4">
+      <div class="w-full max-w-md bg-gray-900 p-8 rounded-lg shadow-md">
+        <h2 class="text-red-500 text-3xl font-bold mb-4 text-center">Chat Application</h2>
+        <div id="form-div">
+         <form id="form" hx-post="/auth" class="flex flex-col items-center">
+          <div class="relative w-full text-white">
+            <input type="text" id="username" name="username" class="bg-black w-full pl-2 pr-10 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-blink" placeholder="Join room as" autocomplete="off" required/>
+          </div>
+          <button type="submit" class="w-full bg-green-600 mt-6 py-2 rounded text-white hover:bg-green-700 focus:outline-none focus:bg-green-700">Submit</button>
+          </form>
+          <button hx-get="/register" type="submit" class="w-full bg-green-600 mt-4 py-2 rounded text-white hover:bg-green-700 focus:outline-none focus:bg-green-700">Register</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
