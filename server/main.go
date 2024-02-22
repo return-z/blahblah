@@ -94,5 +94,5 @@ func main(){
       c.Render(http.StatusOK, r)
     }
   })
-  router.Run("localhost:5990")
+  router.Run(":5990")
 }
