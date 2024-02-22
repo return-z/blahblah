@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/a-h/templ v0.2.543
-	github.com/a-h/templ/examples/integration-gin v0.0.0-20240213151838-753ba3966d4a
+	github.com/a-h/templ/examples/integration-gin v0.0.0-20240221073055-5d11e601536d
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gorilla/websocket v1.5.1
 	github.com/joho/godotenv v1.5.1

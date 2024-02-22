@@ -1,7 +1,7 @@
 github.com/a-h/templ v0.2.543 h1:8YyLvyUtf0/IE2nIwZ62Z/m2o2NqwhnMynzOL78Lzbk=
 github.com/a-h/templ v0.2.543/go.mod h1:jP908DQCwI08IrnTalhzSEH9WJqG/Q94+EODQcJGFUA=
-github.com/a-h/templ/examples/integration-gin v0.0.0-20240213151838-753ba3966d4a h1:u0Cb9pp76/kbo8KhdfEEYThM2pN8fcuPrM7iuABEwIg=
-github.com/a-h/templ/examples/integration-gin v0.0.0-20240213151838-753ba3966d4a/go.mod h1:3kUQJU2bsX/QtX8rCwKcAaHNmD0+YUFG3jL5BOkp5l0=
+github.com/a-h/templ/examples/integration-gin v0.0.0-20240221073055-5d11e601536d h1:omC/URumj+P0IGSEG1qFXsT6I5lU0uKcy7ejqFl3Xcc=
+github.com/a-h/templ/examples/integration-gin v0.0.0-20240221073055-5d11e601536d/go.mod h1:3kUQJU2bsX/QtX8rCwKcAaHNmD0+YUFG3jL5BOkp5l0=
 github.com/bytedance/sonic v1.5.0/go.mod h1:ED5hyg4y6t3/9Ku1R6dU/4KyJ48DZ4jPhfY1O2AihPM=
 github.com/bytedance/sonic v1.9.1 h1:6iJ6NqdoxCDr6mbY8h18oSO+cShGSMRGCEo7F2h0x8s=
 github.com/bytedance/sonic v1.9.1/go.mod h1:i736AoUSYt75HyZLoJW9ERYxcy6eaN6h4BZXU064P/U=
