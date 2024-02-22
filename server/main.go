@@ -46,6 +46,7 @@ func main(){
     return
   }
   _createHubs()
+  gin.SetMode(gin.ReleaseMode)
   router := gin.Default()
   router.Use(CORSMiddleware())
   router.Static("/assets", "./")

@@ -1,15 +1,12 @@
 module server
 
-go 1.21.1
-
-toolchain go1.22.0
+go 1.20
 
 require (
 	github.com/a-h/templ v0.2.543
 	github.com/a-h/templ/examples/integration-gin v0.0.0-20240221073055-5d11e601536d
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gorilla/websocket v1.5.1
-	github.com/joho/godotenv v1.5.1
 	go.mongodb.org/mongo-driver v1.14.0
 )
 
