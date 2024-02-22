@@ -76,8 +76,7 @@ func userAuthDB(name string) (error){
 }
 
 func getURI() (string, error){
-  err := godotenv.Load(".env")
-  return os.Getenv("URI"), err
+  return os.Getenv("URI"), nil
 }
 
 func dbInit() (error){
