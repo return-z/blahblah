@@ -28,11 +28,14 @@ func (hub *Hub) runHub(){
   for {
     select {
     case client := <- hub.register:
+        client.setHub(hub)
         hub.clients[client] = true
+        client.send <- []byte("Joined the hub!")
     case client := <- hub.deregister:
         if _,ok := hub.clients[client]; ok {
-            close(client.send)
+            client.send <- []byte(fmt.Sprintf("%s left the hub", username))
             delete(hub.clients, client)
+            client.setHub(nil)
         }
     case message := <- hub.broadcast:
       messagesDB <- message 

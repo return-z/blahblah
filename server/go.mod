@@ -1,8 +1,10 @@
-module github.com/return-z/blahblah/server
+module server
 
 go 1.21.6
 
 require (
+	github.com/a-h/templ v0.2.543
+	github.com/a-h/templ/examples/integration-gin v0.0.0-20240221073055-5d11e601536d
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gorilla/websocket v1.5.1
 	go.mongodb.org/mongo-driver v1.14.0
@@ -22,7 +24,7 @@ require (
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
-	github.com/mattn/go-isatty v0.0.19 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect

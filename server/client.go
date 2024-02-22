@@ -1,17 +1,26 @@
 package main
 
 import (
+  "fmt"
   "net/http"
   "bytes"
   "time"
   "github.com/gin-gonic/gin"
   "github.com/gorilla/websocket"
+  "encoding/json"
+  "strings"
 )
+
+var username string
 
 type ImClient struct {
   hub *Hub
   conn *websocket.Conn
   send chan []byte
+}
+
+type ReceivedMessage struct {
+  Msg string `json:"message"`
 }
 
 const (
@@ -36,14 +45,51 @@ var upgrader = websocket.Upgrader{
   },
 }
 
+func htmxized(b []byte) []byte{
+  htmxMessage := [][]byte{[]byte(`<div id="messages" hx-swap-oob="beforeend">`), []byte(fmt.Sprintf(`<div class="flex p-1"><p class="text-green-400 font-mono">%s:</p> <p class="text-blue-400 font-mono ml-1">%s</p></div>`, username, string(b))), []byte("</p></div>")}
+  return bytes.Join(htmxMessage, []byte(""))
+}
+
 var (
   newline = []byte{'\n'}
   space = []byte{' '}
 )
 
+func (c *ImClient)parseCommand(message string){
+  if !strings.HasPrefix(message, "!"){
+    return
+  }
+  args := strings.Fields(message)
+  fmt.Println(args)
+  cmd := args[0]
+  switch {
+    case cmd == "!join":
+      if len(args) > 1 {
+        chatroom := args[1]
+        if hub, ok := hubs[chatroom]; ok {
+          hub.register <- c
+        }
+      }
+    case cmd == "!leave":
+      fmt.Println("Trying to leave")
+      if c.hub != nil {
+        c.hub.deregister <- c
+      }
+    default:
+      return 
+  }
+  return
+}
+
+func (c *ImClient) setHub(hub *Hub){
+  c.hub = hub
+}
+
 func (c *ImClient) socketReadPump(){
   defer func() {
-    c.hub.deregister <- c
+    if c.hub != nil {
+      c.hub.deregister <- c
+    }
     c.conn.Close()
   }()
   c.conn.SetReadLimit(maxMessageSize)
@@ -55,7 +101,19 @@ func (c *ImClient) socketReadPump(){
       return
     }
     message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-    c.hub.broadcast <- message
+    var msg ReceivedMessage 
+    err = json.Unmarshal(message, &msg)
+    fmt.Println(msg.Msg)
+    if err != nil {
+      fmt.Println(err)
+      panic(err)
+    }
+    if c.hub != nil {
+      c.hub.broadcast <- []byte(msg.Msg)
+    } else {
+      c.send <- []byte(msg.Msg)
+    }
+    c.parseCommand(msg.Msg)
   }
 }
 
@@ -77,11 +135,12 @@ func (c *ImClient) socketWritePump(){
       if err != nil{
         return
       }
-      w.Write(message)
+      w.Write(htmxized(message))
       n := len(c.send)
       for i:=0; i<n; i++{
         w.Write(newline)
-        w.Write(<- c.send)
+        message := <-c.send
+        w.Write(htmxized(message))
       }
 
       if err := w.Close(); err != nil{
@@ -96,13 +155,12 @@ func (c *ImClient) socketWritePump(){
   }
 }
 
-func serveWS(hub *Hub, c *gin.Context){
+func serveWS(c *gin.Context){
   conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
   if err != nil {
     return
   }
-  imClient := &ImClient{hub: hub, conn: conn, send: make(chan []byte, 256)}
-  imClient.hub.register <- imClient
+  imClient := &ImClient{hub: nil, conn: conn, send: make(chan []byte, 256)}
   go imClient.socketReadPump()
   go imClient.socketWritePump()
 }

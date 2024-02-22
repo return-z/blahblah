@@ -1,0 +1,19 @@
+package main
+
+templ RegisterForm(err error){
+  <div id="form-div" hx-swap-oob="true">
+    <p class="text-yellow-400 text-1xl p-2 text-center">REGISTER</p>
+    <form id="form" hx-post="/register" class="flex flex-col items-center">
+      <div class="relative w-full text-white">
+        <input type="text" id="username" name="username" class="bg-black w-full pl-2 pr-10 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-blink" placeholder="Join room as" autocomplete="off" required/>
+      </div>
+      if err != nil {
+        <p id="error" class="text-red-400 p-1">Username is already taken</p>
+      }
+      <div class="flex w-full mt-4 space-x-4">
+        <button type="submit" class="flex-grow bg-transparent py-2 rounded text-yellow-500 border border-solid border-yellow-500 hover:bg-yellow-500 hover:text-gray-900 focus:outline-none focus:bg-green-700">Submit</button>
+        <button hx-get="/login" type="button" class="flex-grow bg-transparent py-2 rounded text-green-500 border border-solid border-green-500 hover:bg-green-500 hover:text-gray-900 focus:outline-none focus:bg-green-700">Login</button>
+      </div>
+    </form>
+  </div>
+}

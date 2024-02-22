@@ -1,0 +1,19 @@
+package main
+
+templ LoginForm(err error){
+  <div id="form-div" hx-swap-oob="true">
+    <h3 class="text-green-400 text-1xl p-2 text-center">LOGIN</h3>
+    <form id="form" hx-post="/auth" class="flex flex-col items-center">
+      <div class="relative w-full text-white">
+        <input type="text" id="username" name="username" class="bg-black w-full pl-2 pr-10 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-blink" placeholder="Join room as" autocomplete="off" required/>
+      </div>
+      if err != nil {
+        <p id="error" class="text-red-400 p-1">User doesn't exist. Please try again</p>
+      }
+      <div class="flex w-full mt-4 space-x-4">
+        <button type="submit" class="flex-grow bg-transparent py-2 rounded text-green-500 border border-solid border-green-500 hover:bg-green-500 hover:text-gray-900 focus:outline-none focus:bg-green-700">Submit</button>
+        <button hx-get="/register" type="button" class="flex-grow bg-transparent py-2 rounded text-yellow-500 border border-solid border-yellow-500 hover:bg-yellow-500 hover:text-gray-900 focus:outline-none focus:bg-green-700">Register</button>
+      </div>
+    </form>
+  </div>
+}

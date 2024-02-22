@@ -4,7 +4,9 @@ import (
   "fmt"
   "flag"
   "github.com/gin-gonic/gin"
+  "github.com/a-h/templ/examples/integration-gin/gintemplrenderer"
   "net/http"
+  "errors"
 )
 
 var addr = flag.String("localhost", ":5990", "http service address")
@@ -27,35 +29,70 @@ func CORSMiddleware() gin.HandlerFunc {
   }
 }
 
-func isValidChatroom(hubs map[string]bool, chatroom string) bool{
-  return hubs[chatroom]
-}
-
 func _createHubs(){
   hubs = make(map[string]*Hub)
   for i:=1; i<=4; i++{
     chatroomName := fmt.Sprintf("test_chatroom_%d", i)
     hub := newHub()
+    go hub.run()
     hubs[chatroomName] = hub
   }
 }
 
 func main(){
+  err := dbInit()
+  if err != nil {
+    fmt.Println("Problem initializing DB")
+    return
+  }
   _createHubs()
-  go dbInit()
+  gin.SetMode(gin.ReleaseMode)
   router := gin.Default()
   router.Use(CORSMiddleware())
-  router.GET("/ws/:chatroom", func(c *gin.Context){
-    chatroom := c.Param("chatroom")
-    if hub, ok := hubs[chatroom]; ok {
-      go hub.run()
-      serveWS(hub, c)
-    } else{
-      c.JSON(http.StatusNotFound, gin.H{"message":"Chatroom not found!"})
+  router.Static("/assets", "./")
+  router.GET("/", func(c *gin.Context){
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Home())
+    c.Render(http.StatusOK, r)
+  })
+  router.GET("/chat", func(c *gin.Context){
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Home())
+    c.Render(http.StatusOK, r)
+  })
+  router.GET("/login", func(c *gin.Context){
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, LoginForm(nil))
+    c.Render(http.StatusOK, r)
+  })
+  router.GET("/register", func(c *gin.Context){
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, RegisterForm(nil))
+    c.Render(http.StatusOK, r)
+  })
+  router.GET("/ws", func(c *gin.Context){
+    serveWS(c)
+  })
+  router.POST("/register", func(c *gin.Context){
+    name := c.PostForm("username")
+    err := userAuthDB(name)
+    fmt.Println(err)
+    if err != nil{
+      registerUser(name)
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK,LoginForm(nil))
+      c.Render(http.StatusOK, r)
+    } else {
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK,  RegisterForm(errors.New("User already exists")))
+      c.Render(http.StatusOK, r)
     }
   })
   router.POST("/auth", func(c *gin.Context){
-      userAuthDB(c)
+    name := c.PostForm("username")
+    err := userAuthDB(name)
+    if err != nil{
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, LoginForm(err))
+      c.Render(http.StatusOK, r)
+    } else {
+      username = name
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Chat())
+      c.Render(http.StatusOK, r)
+    }
   })
-  router.Run("localhost:5990")
+  router.Run(":5990")
 }
