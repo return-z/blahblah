@@ -40,7 +40,11 @@ func _createHubs(){
 }
 
 func main(){
-  dbInit()
+  err := dbInit()
+  if err != nil {
+    fmt.Println("Problem initializing DB")
+    return
+  }
   _createHubs()
   router := gin.Default()
   router.Use(CORSMiddleware())

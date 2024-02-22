@@ -7,14 +7,11 @@ import (
   "go.mongodb.org/mongo-driver/bson"
   "context"
   "time"
-  "encoding/json"
   "os"
   "errors"
+  "github.com/joho/godotenv"
 )
 
-type Secret struct{
-  URI string `json:"uri"`
-}
 
 var connDB *mongo.Client
 var messagesDB chan []byte
@@ -78,22 +75,16 @@ func userAuthDB(name string) (error){
   return nil
 }
 
-func getURI() string{
-  secret, err := os.ReadFile("secret.json")
-  if err != nil {
-    fmt.Println("File doesn't exist, pwnie")
-    return ""
-  }
-  var uri Secret
-  if err := json.Unmarshal(secret, &uri); err != nil{
-    fmt.Println("Error parsing uri: ", err)
-    return ""
-  }
-  return uri.URI
+func getURI() (string, error){
+  err := godotenv.Load(".env")
+  return os.Getenv("URI"), err
 }
 
-func dbInit(){
-  uri := getURI()
+func dbInit() (error){
+  uri, err := getURI()
+  if err != nil{
+    return errors.New("Error fetching URI")
+  }
   serverAPI := options.ServerAPI(options.ServerAPIVersion1)
   opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
   conn, err := mongo.Connect(context.TODO(), opts)
@@ -108,5 +99,8 @@ func dbInit(){
     panic(err)
   }
   fmt.Println(pingResult)
+  
   go handleDB()
+  
+  return nil
 }
