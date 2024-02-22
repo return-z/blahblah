@@ -23,7 +23,7 @@ func Auth() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"auth\" class=\"h-screen flex justify-center items-center\"><div class=\"w-full flex flex-col justify-center items-center px-4\"><div class=\"w-full max-w-md bg-gray-900 p-8 rounded-lg shadow-md\"><h2 class=\"text-red-500 text-3xl font-bold mb-4 text-center\">Chat Application</h2>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"auth\" class=\"h-screen flex justify-center items-center\"><div class=\"w-full flex flex-col justify-center items-center px-4\"><div class=\"w-full max-w-md bg-gray-900 p-8 rounded-lg shadow-md\"><h2 class=\"text-red-500 text-3xl font-bold mb-2 text-center\">Chat Application</h2>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

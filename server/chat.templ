@@ -19,8 +19,8 @@ templ Chat(){
       <div id="ws-form" hx-ws="connect:/ws">
         <form id="form" hx-ws="send:submit" class="flex">
           <input name="message" class="w-full rounded-l-md bg-gray-800 border-2 border-gray-700 focus:border-blue-500 focus:outline-none py-2 px-4" placeholder="Type your message..." />
-          <button type="submit" class="bg-green-600 px-4 rounded-r-md hover:bg-green-500 focus:outline-none">
-            <svg class="text-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <button type="submit" class="bg-transparent px-4 border border-solid border-green-500 rounded-r-md hover:bg-transparent focus:outline-none">
+            <svg class="text-green h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
           </button>

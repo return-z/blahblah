@@ -23,7 +23,7 @@ func RegisterForm(err error) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"form-div\" hx-swap-oob=\"true\"><form id=\"form\" hx-post=\"/register\" class=\"flex flex-col items-center\"><div class=\"relative w-full text-white\"><input type=\"text\" id=\"username\" name=\"username\" class=\"bg-black w-full pl-2 pr-10 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-blink\" placeholder=\"Join room as\" autocomplete=\"off\" required></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"form-div\" hx-swap-oob=\"true\"><p class=\"text-yellow-400 text-1xl p-2 text-center\">REGISTER</p><form id=\"form\" hx-post=\"/register\" class=\"flex flex-col items-center\"><div class=\"relative w-full text-white\"><input type=\"text\" id=\"username\" name=\"username\" class=\"bg-black w-full pl-2 pr-10 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-blink\" placeholder=\"Join room as\" autocomplete=\"off\" required></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -33,7 +33,7 @@ func RegisterForm(err error) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button type=\"submit\" class=\"w-full bg-green-600 mt-4 py-2 rounded text-white hover:bg-green-700 focus:outline-none focus:bg-green-700\">Register</button></form><button hx-get=\"/login\" type=\"submit\" class=\"w-full bg-green-600 mt-4 py-2 rounded text-white hover:bg-green-700 focus:outline-none focus:bg-green-700\">Login</button></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex w-full mt-4 space-x-4\"><button type=\"submit\" class=\"flex-grow bg-transparent py-2 rounded text-yellow-500 border border-solid border-yellow-500 hover:bg-yellow-500 hover:text-gray-900 focus:outline-none focus:bg-green-700\">Submit</button> <button hx-get=\"/login\" type=\"button\" class=\"flex-grow bg-transparent py-2 rounded text-green-500 border border-solid border-green-500 hover:bg-green-500 hover:text-gray-900 focus:outline-none focus:bg-green-700\">Login</button></div></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
