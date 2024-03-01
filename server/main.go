@@ -7,6 +7,7 @@ import (
   "github.com/a-h/templ/examples/integration-gin/gintemplrenderer"
   "net/http"
   "errors"
+  "assets"
 )
 
 var addr = flag.String("localhost", ":5990", "http service address")
@@ -51,19 +52,19 @@ func main(){
   router.Use(CORSMiddleware())
   router.Static("/assets", "./")
   router.GET("/", func(c *gin.Context){
-    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Home())
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, assets.Home())
     c.Render(http.StatusOK, r)
   })
   router.GET("/chat", func(c *gin.Context){
-    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Home())
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, assets.Home())
     c.Render(http.StatusOK, r)
   })
   router.GET("/login", func(c *gin.Context){
-    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, LoginForm(nil))
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, assets.LoginForm(nil))
     c.Render(http.StatusOK, r)
   })
   router.GET("/register", func(c *gin.Context){
-    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, RegisterForm(nil))
+    r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, assets.RegisterForm(nil))
     c.Render(http.StatusOK, r)
   })
   router.GET("/ws", func(c *gin.Context){
@@ -75,10 +76,10 @@ func main(){
     fmt.Println(err)
     if err != nil{
       registerUser(name)
-      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK,LoginForm(nil))
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, assets.LoginForm(nil))
       c.Render(http.StatusOK, r)
     } else {
-      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK,  RegisterForm(errors.New("User already exists")))
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, assets.RegisterForm(errors.New("User already exists")))
       c.Render(http.StatusOK, r)
     }
   })
@@ -86,11 +87,11 @@ func main(){
     name := c.PostForm("username")
     err := userAuthDB(name)
     if err != nil{
-      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, LoginForm(err))
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, assets.LoginForm(err))
       c.Render(http.StatusOK, r)
     } else {
       username = name
-      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, Chat())
+      r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, assets.Chat())
       c.Render(http.StatusOK, r)
     }
   })
