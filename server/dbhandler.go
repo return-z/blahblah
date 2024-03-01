@@ -79,11 +79,10 @@ func getURI() (string, error){
 }
 
 func dbInit() (error){
-/*  uri, err := getURI()
+  uri, err := getURI()
   if err != nil{
     return errors.New("Error fetching URI")
   }
-*/
   serverAPI := options.ServerAPI(options.ServerAPIVersion1)
   opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
   conn, err := mongo.Connect(context.TODO(), opts)
