@@ -8,7 +8,6 @@ import (
   "github.com/gin-gonic/gin"
   "github.com/gorilla/websocket"
   "encoding/json"
-  "strings"
 )
 
 var username string
@@ -55,31 +54,6 @@ var (
   space = []byte{' '}
 )
 
-func (c *ImClient)parseCommand(message string){
-  if !strings.HasPrefix(message, "!"){
-    return
-  }
-  args := strings.Fields(message)
-  fmt.Println(args)
-  cmd := args[0]
-  switch {
-    case cmd == "!join":
-      if len(args) > 1 {
-        chatroom := args[1]
-        if hub, ok := hubs[chatroom]; ok {
-          hub.register <- c
-        }
-      }
-    case cmd == "!leave":
-      fmt.Println("Trying to leave")
-      if c.hub != nil {
-        c.hub.deregister <- c
-      }
-    default:
-      return 
-  }
-  return
-}
 
 func (c *ImClient) setHub(hub *Hub){
   c.hub = hub
