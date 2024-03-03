@@ -1,10 +1,11 @@
-package main
+package engine
 
 import (
   "fmt"
   "errors"
   "strings"
 )
+
 
 func (c *ImClient)parseCommand(message string) (error){
   if !strings.HasPrefix(message, "!"){
@@ -19,7 +20,7 @@ func (c *ImClient)parseCommand(message string) (error){
       }
       if len(args) > 1 {
         chatroom := args[1]
-        if hub, ok := hubs[chatroom]; ok {
+        if hub, ok := c.engine.Hubs[chatroom]; ok {
           hub.register <- c
         }
       }
@@ -34,16 +35,16 @@ func (c *ImClient)parseCommand(message string) (error){
       fmt.Println("Creating a chatroom")
       if len(args) > 1 {
         chatroom := args[1]
-        if _, ok := hubs[chatroom]; ok {
+        if _, ok := c.engine.Hubs[chatroom]; ok {
           return errors.New("The chatroom already exists")
         }
-        hub := newHub()
-        hubs[chatroom] = hub
+        hub := newHub(chatroom)
+        c.engine.Hubs[chatroom] = hub
         hub.run()
       }
     case "!rooms":
-      rooms := make([]string, 0, len(hubs))
-      for hub := range hubs {
+      rooms := make([]string, 0, len(c.engine.Hubs))
+      for hub := range c.engine.Hubs {
         rooms = append(rooms, hub)
       }
       c.send <- []byte(strings.Join(rooms, ", "))

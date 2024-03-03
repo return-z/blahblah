@@ -1,4 +1,4 @@
-package main
+package engine
 
 import (
   "fmt"
@@ -11,41 +11,19 @@ import (
   "errors"
 )
 
-
-var connDB *mongo.Client
-var messagesDB chan []byte
-
 type ResponseData struct {
   Username string `json:"username"`
 }
 
-func handleDB(){
-  defer func() {
-    if err := connDB.Disconnect(context.TODO()); err != nil {
-      panic(err)
-    }
-  }()
-  conn := connDB.Database("chat-app").Collection("messages")
-  for{
-    select{ 
-    case message := <-messagesDB:
-      strMessage := string(message)
-      fmt.Println(strMessage)
-      doc := Message{Body: strMessage, CreatedAt: time.Now()}
-      result, err := conn.InsertOne(context.TODO(), doc)
-      if err != nil {
-        panic(err)
-      }
-      fmt.Println("Inserted message in db with _id: ", result.InsertedID)
-    }
-  }
+type HubDoc struct {
+  Name string `bson:"name"`
 }
 
-func registerUser(name string) (error){
+func (e *Engine) RegisterUserToDB(name string) (error){
   if name == ""{
     return errors.New("invalid name")
   }
-  coll := connDB.Database("chat-app").Collection("chatters")
+  coll := e.dbConn.Database("chat-app").Collection("chatters")
   chatrooms := make([]string, 0)
   newChatter := Chatter{Username: name, CreatedAt: time.Now(), Chatrooms: chatrooms}
   result, err := coll.InsertOne(context.TODO(), newChatter)
@@ -56,11 +34,11 @@ func registerUser(name string) (error){
   return nil
 }
 
-func userAuthDB(name string) (error){
+func (e *Engine) LoginUser(name string) (error){
   if name == "" {
     return errors.New("invalid username")
   }
-  coll := connDB.Database("chat-app").Collection("chatters")
+  coll := e.dbConn.Database("chat-app").Collection("chatters")
   filter := bson.M{"username": name}
   fmt.Println(filter)
   var res Chatter
@@ -71,6 +49,7 @@ func userAuthDB(name string) (error){
       return errors.New("User not found")
     }
   }
+  loggedInUser = name
   return nil
 }
 
@@ -78,27 +57,46 @@ func getURI() (string, error){
   return os.Getenv("URI"), nil
 }
 
-func dbInit() (error){
+func (e *Engine) getHubsFromDB() ([]string, error){
+  var results []string
+  coll := e.dbConn.Database("chat-app").Collection("chatrooms")
+  filter := bson.D{{}}
+  opts := options.Find().SetProjection(bson.D{{"name", 1}})
+  cursor, err := coll.Find(context.TODO(), filter, opts)
+  if err != nil {
+    return results, err
+  }
+  defer cursor.Close(context.Background())
+  var elem struct {
+    Name string `bson:"name"`
+  }
+  for cursor.Next(context.Background()){
+    err := cursor.Decode(&elem)
+    if err != nil {
+      return results, err
+    }
+    results = append(results, elem.Name)
+  }
+  return results, nil
+}
+
+
+func dbInit() (*mongo.Client, error){
   uri, err := getURI()
   if err != nil{
-    return errors.New("Error fetching URI")
+    return nil, errors.New("Error fetching URI")
   }
   serverAPI := options.ServerAPI(options.ServerAPIVersion1)
   opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
-  conn, err := mongo.Connect(context.TODO(), opts)
-  connDB = conn
-  messagesDB = make(chan []byte)
-  fmt.Println("Successfully connected to the DB")
+  dbConn, err := mongo.Connect(context.TODO(), opts)
   if err != nil {
     panic(err)
-  }
+  } 
   var pingResult bson.M
-  if err := connDB.Database("admin").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Decode(&pingResult); err != nil {
-    panic(err)
+  if err := dbConn.Database("admin").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Decode(&pingResult); err != nil {
+    return nil, err
   }
   fmt.Println(pingResult)
   
-  go handleDB()
-  
-  return nil
+  return dbConn, nil
 }

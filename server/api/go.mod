@@ -1,22 +1,21 @@
-module server
+module api
 
 go 1.22.0
 
 require (
-	api v0.0.0-00010101000000-000000000000
+	assets v0.0.0-00010101000000-000000000000
 	engine v0.0.0-00010101000000-000000000000
+	github.com/a-h/templ v0.2.598
+	github.com/a-h/templ/examples/integration-gin v0.0.0-20240301115645-2a7ab8400e6e
+	github.com/gin-gonic/gin v1.9.2-0.20240219023448-ecdbbbe9483d
 )
 
 require (
-	assets v0.0.0-00010101000000-000000000000 // indirect
-	github.com/a-h/templ v0.2.598 // indirect
-	github.com/a-h/templ/examples/integration-gin v0.0.0-20240301115645-2a7ab8400e6e // indirect
 	github.com/bytedance/sonic v1.11.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/gin-gonic/gin v1.9.2-0.20240219023448-ecdbbbe9483d // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.18.0 // indirect
@@ -49,8 +48,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace assets => ./assets
+replace assets => ../assets
 
-replace engine => ./engine
-
-replace api => ./api
+replace engine => ../engine

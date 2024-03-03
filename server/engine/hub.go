@@ -1,4 +1,4 @@
-package main
+package engine
 
 import (
   "fmt"
@@ -6,6 +6,7 @@ import (
 
 
 type Hub struct {
+  name string
   clients map[*ImClient]bool
   register chan *ImClient
   deregister chan *ImClient
@@ -13,9 +14,10 @@ type Hub struct {
 }
 
 
-func newHub() *Hub {
+func newHub(name string) *Hub {
   fmt.Println("Creating a new hub...")
   return &Hub{
+    name: name,
     clients: make(map[*ImClient]bool), 
     register: make(chan *ImClient),
     deregister: make(chan *ImClient),
@@ -33,13 +35,11 @@ func (hub *Hub) runHub(){
         client.send <- []byte("Joined the hub!")
     case client := <- hub.deregister:
         if _,ok := hub.clients[client]; ok {
-            client.send <- []byte(fmt.Sprintf("%s left the hub", username))
+            client.send <- []byte(fmt.Sprintf("%s left the hub", client.name))
             delete(hub.clients, client)
             client.setHub(nil)
         }
     case message := <- hub.broadcast:
-      messagesDB <- message 
-      fmt.Println("Put message in db")
       for client := range(hub.clients){
         select {
         case client.send <- message:
@@ -55,5 +55,4 @@ func (hub *Hub) runHub(){
 
 func (hub *Hub) run(){
   go hub.runHub()
-  go handleDB()
 }

@@ -23,7 +23,7 @@ func LoginForm(err error) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"form-div\" hx-swap-oob=\"true\"><h3 class=\"text-green-400 text-1xl p-2 text-center\">LOGIN</h3><form id=\"form\" hx-post=\"/auth\" class=\"flex flex-col items-center\"><div class=\"relative w-full text-white\"><input type=\"text\" id=\"username\" name=\"username\" class=\"bg-black w-full pl-2 pr-10 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-blink\" placeholder=\"Join room as\" autocomplete=\"off\" required></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"form-div\" hx-swap-oob=\"true\"><h3 class=\"text-green-400 text-1xl p-2 text-center\">LOGIN</h3><form id=\"form\" hx-post=\"/login\" class=\"flex flex-col items-center\"><div class=\"relative w-full text-white\"><input type=\"text\" id=\"username\" name=\"username\" class=\"bg-black w-full pl-2 pr-10 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-blink\" placeholder=\"Join room as\" autocomplete=\"off\" required></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

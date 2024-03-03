@@ -1,0 +1,12 @@
+adding a scrollable modal that shows available chatrooms with a feature to copy the name of the chatroom
+create a new chatroom using the commands
+build a tester for the engine 
+  separate the engine from the web shenanigans
+  provide an entry point into the engine using methods
+  engine {clients, hubs, database connections and requests}
+  api {handling of the api functions and calls}
+  assets {handling the serving of htmx to the client}
+
+the engine abstraction encapsulates {clients, hubs, dbconn}
+
+client creation request -> login (api, takes the username) -> engine.handleLogin (use`rname) -> db.handleLogin (username) 

@@ -1,22 +1,26 @@
-package main
+package engine
 
 import (
   "fmt"
   "net/http"
   "bytes"
   "time"
-  "github.com/gin-gonic/gin"
   "github.com/gorilla/websocket"
   "encoding/json"
 )
 
-var username string
+
+var loggedInUser string = ""
+
 
 type ImClient struct {
+  engine *Engine
+  name string
   hub *Hub
   conn *websocket.Conn
   send chan []byte
 }
+
 
 type ReceivedMessage struct {
   Msg string `json:"message"`
@@ -45,7 +49,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func htmxized(b []byte) []byte{
-  htmxMessage := [][]byte{[]byte(`<div id="messages" hx-swap-oob="beforeend">`), []byte(fmt.Sprintf(`<div class="flex p-1"><p class="text-green-400 font-mono">%s:</p> <p class="text-blue-400 font-mono ml-1">%s</p></div>`, username, string(b))), []byte("</p></div>")}
+  htmxMessage := [][]byte{[]byte(`<div id="messages" hx-swap-oob="beforeend">`), []byte(fmt.Sprintf(`<div class="flex p-1"><p class="text-green-400 font-mono">%s:</p> <p class="text-blue-400 font-mono ml-1">%s</p></div>`, loggedInUser, string(b))), []byte("</p></div>")}
   return bytes.Join(htmxMessage, []byte(""))
 }
 
@@ -129,12 +133,3 @@ func (c *ImClient) socketWritePump(){
   }
 }
 
-func serveWS(c *gin.Context){
-  conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-  if err != nil {
-    return
-  }
-  imClient := &ImClient{hub: nil, conn: conn, send: make(chan []byte, 256)}
-  go imClient.socketReadPump()
-  go imClient.socketWritePump()
-}
