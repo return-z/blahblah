@@ -35,7 +35,7 @@ func (s *Server) Start (engine *engine.Engine){
   router.GET("/register", func(c *gin.Context){
     c.HTML(http.StatusOK, "", assets.RegisterForm(nil))
   })
-  router.GET("/ws", func(c *gin.Context){
+  router.GET("/ws/:username", func(c *gin.Context){
     engine.ServeWS(c)
   })
 
@@ -54,7 +54,7 @@ func (s *Server) Start (engine *engine.Engine){
     if err != nil{
       c.HTML(http.StatusOK, "", assets.LoginForm(err))
     } else {
-      c.HTML(http.StatusOK, "", assets.Chat())
+      c.HTML(http.StatusOK, "", assets.Chat(name))
     }
   })
 

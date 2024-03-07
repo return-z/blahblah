@@ -32,11 +32,12 @@ func (e *Engine)setHubs(hubs []string){
 }
 
 func (e *Engine)ServeWS(c *gin.Context){
+  username := c.Param("username")
   conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
   if err != nil {
     return
   }
-  imClient := &ImClient{engine: e, name: loggedInUser, hub: nil, conn: conn, send: make(chan []byte, 256)}
+  imClient := &ImClient{engine: e, name: username, hub: nil, conn: conn, send: make(chan *BroadcastMessage, 256)}
   go imClient.socketReadPump()
   go imClient.socketWritePump()
 }

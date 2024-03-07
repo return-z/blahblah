@@ -47,7 +47,7 @@ func (c *ImClient)parseCommand(message string) (error){
       for hub := range c.engine.Hubs {
         rooms = append(rooms, hub)
       }
-      c.send <- []byte(strings.Join(rooms, ", "))
+      c.send <- NewBroadcastMessage(c.name, strings.Join(rooms, ", "))
     default:
       return nil
   }

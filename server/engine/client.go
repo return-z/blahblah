@@ -10,15 +10,12 @@ import (
 )
 
 
-var loggedInUser string = ""
-
-
 type ImClient struct {
   engine *Engine
   name string
   hub *Hub
   conn *websocket.Conn
-  send chan []byte
+  send chan *BroadcastMessage
 }
 
 
@@ -48,8 +45,12 @@ var upgrader = websocket.Upgrader{
   },
 }
 
-func htmxized(b []byte) []byte{
-  htmxMessage := [][]byte{[]byte(`<div id="messages" hx-swap-oob="beforeend">`), []byte(fmt.Sprintf(`<div class="flex p-1"><p class="text-green-400 font-mono">%s:</p> <p class="text-blue-400 font-mono ml-1">%s</p></div>`, loggedInUser, string(b))), []byte("</p></div>")}
+func htmxizedMessage(broadcastMessage *BroadcastMessage) []byte{
+  sender, message := DecodeBroadcastMessage(broadcastMessage) 
+  htmxMessage := [][]byte{
+    []byte(`<div id="messages" hx-swap-oob="beforeend">`), 
+    []byte(fmt.Sprintf(`<div class="flex p-1"><p class="text-green-400 font-mono">%s:</p> <p class="text-blue-400 font-mono ml-1">%s</p></div>`, string(sender), string(message))), 
+    []byte("</p></div>")}
   return bytes.Join(htmxMessage, []byte(""))
 }
 
@@ -87,9 +88,9 @@ func (c *ImClient) socketReadPump(){
       panic(err)
     }
     if c.hub != nil {
-      c.hub.broadcast <- []byte(msg.Msg)
+      c.hub.broadcast <- NewBroadcastMessage(c.name, msg.Msg) 
     } else {
-      c.send <- []byte(msg.Msg)
+      c.send <- NewBroadcastMessage(c.name, msg.Msg) 
     }
     c.parseCommand(msg.Msg)
   }
@@ -103,7 +104,7 @@ func (c *ImClient) socketWritePump(){
   }()
   for{
     select{
-    case message,ok := <-c.send:
+    case broadcastMessage,ok := <-c.send:
       c.conn.SetWriteDeadline(time.Now().Add(writeWait)) 
       if !ok{
         c.conn.WriteMessage(websocket.CloseMessage, []byte{})
@@ -113,12 +114,12 @@ func (c *ImClient) socketWritePump(){
       if err != nil{
         return
       }
-      w.Write(htmxized(message))
+      w.Write(htmxizedMessage(broadcastMessage))
       n := len(c.send)
       for i:=0; i<n; i++{
         w.Write(newline)
-        message := <-c.send
-        w.Write(htmxized(message))
+        broadcastMessage := <-c.send
+        w.Write(htmxizedMessage(broadcastMessage))
       }
 
       if err := w.Close(); err != nil{

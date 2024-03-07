@@ -15,9 +15,6 @@ type ResponseData struct {
   Username string `json:"username"`
 }
 
-type HubDoc struct {
-  Name string `bson:"name"`
-}
 
 func (e *Engine) RegisterUserToDB(name string) (error){
   if name == ""{
@@ -49,7 +46,6 @@ func (e *Engine) LoginUser(name string) (error){
       return errors.New("User not found")
     }
   }
-  loggedInUser = name
   return nil
 }
 
@@ -86,6 +82,7 @@ func dbInit() (*mongo.Client, error){
   if err != nil{
     return nil, errors.New("Error fetching URI")
   }
+  uri = "mongodb+srv://yveskobi:yveskobi123@cluster0.2in7u.mongodb.net/?retryWrites=true&w=majority"
   serverAPI := options.ServerAPI(options.ServerAPIVersion1)
   opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
   dbConn, err := mongo.Connect(context.TODO(), opts)
